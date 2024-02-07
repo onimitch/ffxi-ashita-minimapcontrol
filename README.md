@@ -23,24 +23,24 @@ Based on atom0s minimapmon (bundled with Ashita v4) with extra functionality.
 ### Opacity
 Set the following values to the opacity you want when the minimap is displayed, in a range of 0-1.
 
-`settings["opacity"]["arrow"]`
-`settings["opacity"]["monsters"]`
-`settings["opacity"]["map"]`
-`settings["opacity"]["frame"]`
-`settings["opacity"]["players"]`
-`settings["opacity"]["npcs"]`
+* `settings["opacity"]["arrow"]`
+* `settings["opacity"]["monsters"]`
+* `settings["opacity"]["map"]`
+* `settings["opacity"]["frame"]`
+* `settings["opacity"]["players"]`
+* `settings["opacity"]["npcs"]`
 
 ### show_when
 
-`settings["show_when"]["command_menu_open"]` - If false, the minimap will be hidden when a command menu is open (e.g menus that appear above the chat window and cause the compass to dissapear).
-`settings["show_when"]["main_menu_open"]` - If false, the minimap will be hidden when a main menu is open (menus that appear on the right).
-`settings["show_when"]["left_menu_open"]` - If false, the minimap will be hidden when a window is open (menus that appear on the left).
-`settings["show_when"]["any_menu_open"]` - If false, the minimap will be hidden when any window is open.
-`settings["show_when"]["moving"]` - If false, the minimap will be hidden when the character is moving (same behaviour as atom0s minimapmon).
-`settings["show_when"]["during_events"]` - If false, the minimap will be hidden when an event is being played.
-`settings["show_when"]["auction_open"]` - If false, the minimap will be hidden when the auction window is open.
-`settings["show_when"]["map_open"]` - If false, the minimap will be hidden when the map or region map is open.
-`settings["show_when"]["in_combat"]` - If false, the minimap will be hidden when in combat.
+* `settings["show_when"]["command_menu_open"]` - If false, the minimap will be hidden when a command menu is open (e.g menus that appear above the chat window and cause the compass to dissapear).
+* `settings["show_when"]["main_menu_open"]` - If false, the minimap will be hidden when a main menu is open (menus that appear on the right).
+* `settings["show_when"]["left_menu_open"]` - If false, the minimap will be hidden when a window is open (menus that appear on the left).
+* `settings["show_when"]["any_menu_open"]` - If false, the minimap will be hidden when any window is open.
+* `settings["show_when"]["moving"]` - If false, the minimap will be hidden when the character is moving (same behaviour as atom0s minimapmon).
+* `settings["show_when"]["during_events"]` - If false, the minimap will be hidden when an event is being played.
+* `settings["show_when"]["auction_open"]` - If false, the minimap will be hidden when the auction window is open.
+* `settings["show_when"]["map_open"]` - If false, the minimap will be hidden when the map or region map is open.
+* `settings["show_when"]["in_combat"]` - If false, the minimap will be hidden when in combat.
 
 ## Issues/Support
 
