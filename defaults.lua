@@ -15,12 +15,11 @@ defaults.show_when = T{
     moving = true,
     during_events = false,
     in_combat = false,
-    any_menu_open = false,
+    any_menu_open = true,
     left_menu_open = false,
-    command_menu_open = false,
-    main_menu_open = false,
+    command_menu_open = true,
+    main_menu_open = true,
     map_open = false,
-    in_city = true,
     auction_open = false,
 }
 
