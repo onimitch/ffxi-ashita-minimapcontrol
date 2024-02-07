@@ -14,7 +14,7 @@ Based on atom0s minimapmon (bundled with Ashita v4) with extra functionality.
 4. Make sure that minimapmon is not loaded, as the two addons won't work together.
 
 ## Config
-1. Edit **_Ashita4/config/addons/minimapcontrol/<character>/settings.lua_**
+1. Edit **_Ashita4/config/addons/minimapcontrol/[character]/settings.lua_**
 2. Make and save changes.
 3. Reload the plugin: `/addon reload minimapcontrol`
 
