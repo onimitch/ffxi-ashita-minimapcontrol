@@ -18,14 +18,15 @@ local minimapcontrol = {
     settings = T{},
     last_update = 0,
     update_interval = 0.05,
-    zoning = false,
-    combat_engaged = false,
     opacity = {
         current = T{},
         previous = T{},
     },
     player_pos = { 0, 0, 0 },
     visible = true,
+    zoning = false,
+
+    combat_engaged = false,
     enemy_list = T{},
 
     current_menu = '',
@@ -225,18 +226,11 @@ minimapcontrol.update_visiblity = function()
     end
 end
 
-local lastHPPercent = 0
-
 minimapcontrol.update_enemy_list = function()
     local updated_enemy_list = T{}
 
     for _, npc_index in ipairs(minimapcontrol.enemy_list) do
         local ent = GetEntity(npc_index)
-
-        if lastHPPercent ~= ent.HPPercent then
-            lastHPPercent = ent.HPPercent
-        end
-
         if ent ~= nil and GetIsValidMob(npc_index) and ent.HPPercent > 0 then
             table.insert(updated_enemy_list, npc_index)
         end
@@ -249,6 +243,20 @@ minimapcontrol.update_enemy_list = function()
     if old_length > 0 and #updated_enemy_list == 0 then
         minimapcontrol.combat_engaged = false
     end
+end
+
+minimapcontrol.reset_state = function()
+    minimapcontrol.enemy_list = T{}
+    minimapcontrol.combat_engaged = false
+    minimapcontrol.current_menu = ''
+    minimapcontrol.is_menu_open = false
+    minimapcontrol.is_map_open = false
+    minimapcontrol.is_left_menu_open = false
+    minimapcontrol.is_main_menu_open = false
+    minimapcontrol.is_config_menu_open = false
+    minimapcontrol.is_helpdesk_menu_open = false
+    minimapcontrol.is_command_menu_open = false
+    minimapcontrol.is_auction_menu_open = false
 end
 
 ashita.events.register('load', 'minimapcontrol_load', function()
@@ -269,6 +277,7 @@ end)
 ashita.events.register('packet_in', 'packet_in_cb', function(e)
     if (e.id == defines.packets.inc.zone_out) then
         minimapcontrol.zoning = true
+        minimapcontrol.reset_state()
         return
     end
 
