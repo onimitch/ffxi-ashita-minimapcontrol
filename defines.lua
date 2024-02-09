@@ -2,6 +2,7 @@ local defines = T{}
 
 defines.packets = {
     inc = {
+        zone_in = 0x00A,
         zone_out = 0x00B,
         inventory_update = 0x01D,
         npc_update = 0x00E,
@@ -15,6 +16,15 @@ defines.packets = {
 defines.actions = {
     engage_monster = 0x02,
     disengage = 0x04,
+}
+
+defines.entity_status = {
+    idle = 0,
+    enganged = 1,
+    dead = 2,
+    dead2 = 3,
+    zoning = 4,
+    resting = 33,
 }
 
 defines.menus = {
@@ -64,7 +74,7 @@ defines.menus = {
     ability_select = 'abiselec',
 }
 
-defines.command_menus = {
+defines.command_menu = {
     defines.menus.command_moghouse,
     defines.menus.query,
     defines.menus.command,
@@ -76,7 +86,7 @@ defines.command_menus = {
     defines.menus.ability_select,
 }
 
-defines.left_menus = {
+defines.window = {
     defines.menus.inventory,
     defines.menus.equip,
     defines.menus.aux_inv,
@@ -103,7 +113,7 @@ defines.left_menus = {
     defines.menus.macro,
 }
 
-defines.main_menus = {
+defines.main_menu = {
     defines.menus.menu1,
     defines.menus.menu2,
     defines.menus.config_menu,

@@ -34,7 +34,7 @@ Set the following values to the opacity you want when the minimap is displayed, 
 
 * `settings["show_when"]["command_menu_open"]` - If false, the minimap will be hidden when a command menu is open (e.g menus that appear above the chat window and cause the compass to dissapear).
 * `settings["show_when"]["main_menu_open"]` - If false, the minimap will be hidden when a main menu is open (menus that appear on the right).
-* `settings["show_when"]["left_menu_open"]` - If false, the minimap will be hidden when a window is open (menus that appear on the left).
+* `settings["show_when"]["window_open"]` - If false, the minimap will be hidden when a window is open (menus that appear on the left).
 * `settings["show_when"]["any_menu_open"]` - If false, the minimap will be hidden when any window is open.
 * `settings["show_when"]["moving"]` - If false, the minimap will be hidden when the character is moving (same behaviour as atom0s minimapmon).
 * `settings["show_when"]["during_events"]` - If false, the minimap will be hidden when an event is being played.

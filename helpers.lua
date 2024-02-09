@@ -1,4 +1,4 @@
--- Helper methods from HXUI
+-- Helper methods taken from HXUI
 
 function GetIsMob(targetEntity)
 	if (targetEntity == nil) then

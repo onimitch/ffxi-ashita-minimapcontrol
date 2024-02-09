@@ -26,13 +26,14 @@ local minimapcontrol = {
     visible = true,
     zoning = false,
 
+    player_moving = false,
     combat_engaged = false,
     enemy_list = T{},
 
     current_menu = '',
     is_menu_open = false,
     is_map_open = false,
-    is_left_menu_open = false,
+    is_window_open = false,
     is_main_menu_open = false,
     is_config_menu_open = false,
     is_helpdesk_menu_open = false,
@@ -122,7 +123,7 @@ minimapcontrol.update_menu_state = function()
 
     -- Inside command menu
     minimapcontrol.is_command_menu_open = false
-    for _, v in ipairs(defines.command_menus) do
+    for _, v in ipairs(defines.command_menu) do
         if menu_now:match(v) then
             minimapcontrol.is_command_menu_open = true
             break
@@ -132,12 +133,12 @@ minimapcontrol.update_menu_state = function()
     -- Inside auction menu
     if menu_now:match(defines.menus.auction_menu) then
         minimapcontrol.is_auction_menu_open = true
-    end   
+    end  
 
     -- Main menu only (menu that appears on the right)
     minimapcontrol.is_main_menu_open = minimapcontrol.is_config_menu_open or minimapcontrol.is_helpdesk_menu_open
     if not minimapcontrol.is_main_menu_open then
-        for _, v in ipairs(defines.main_menus) do
+        for _, v in ipairs(defines.main_menu) do
             if menu_now:match(v) then
                 minimapcontrol.is_main_menu_open = true
                 break
@@ -145,17 +146,17 @@ minimapcontrol.update_menu_state = function()
         end
     end
 
-    -- "Left" menus
-    minimapcontrol.is_left_menu_open = minimapcontrol.is_config_menu_open or minimapcontrol.is_helpdesk_menu_open
-    for _, v in ipairs(defines.left_menus) do
+    -- Windows
+    minimapcontrol.is_window_open = minimapcontrol.is_config_menu_open or minimapcontrol.is_helpdesk_menu_open
+    for _, v in ipairs(defines.window) do
         if menu_now:match(v) then
-            minimapcontrol.is_left_menu_open = true
+            minimapcontrol.is_window_open = true
             break
         end
     end
     -- Fix false positive
     if menu_now:match(defines.menus.misson_category) then
-        minimapcontrol.is_left_menu_open = false
+        minimapcontrol.is_window_open = false
     end
 
     -- Map we can just check map or region
@@ -172,7 +173,7 @@ minimapcontrol.update_visiblity = function()
     end
 
     -- Hide if moving
-    if not minimapcontrol.settings.show_when.moving and minimapcontrol.moving then
+    if not minimapcontrol.settings.show_when.moving and minimapcontrol.player_moving then
         minimapcontrol.visible = false
         return
     end
@@ -196,7 +197,7 @@ minimapcontrol.update_visiblity = function()
     end
 
     -- Hide if left menu open
-    if not minimapcontrol.settings.show_when.left_menu_open and minimapcontrol.is_left_menu_open then
+    if not minimapcontrol.settings.show_when.window_open and minimapcontrol.is_window_open then
         minimapcontrol.visible = false
         return
     end
@@ -220,7 +221,7 @@ minimapcontrol.update_visiblity = function()
     end
 
     -- Hide if in combat
-    if not minimapcontrol.settings.show_when.in_combat and (#minimapcontrol.enemy_list > 0 or minimapcontrol.combat_engaged) then
+    if not minimapcontrol.settings.show_when.in_combat and (minimapcontrol.combat_engaged or #minimapcontrol.enemy_list > 0) then
         minimapcontrol.visible = false
         return
     end
@@ -229,29 +230,48 @@ end
 minimapcontrol.update_enemy_list = function()
     local updated_enemy_list = T{}
 
-    for _, npc_index in ipairs(minimapcontrol.enemy_list) do
-        local ent = GetEntity(npc_index)
-        if ent ~= nil and GetIsValidMob(npc_index) and ent.HPPercent > 0 then
-            table.insert(updated_enemy_list, npc_index)
+    for _, user_index in ipairs(minimapcontrol.enemy_list) do
+        local ent = GetEntity(user_index)
+        if ent ~= nil and GetIsValidMob(user_index) and ent.HPPercent > 0 then
+            table.insert(updated_enemy_list, user_index)
         end
     end
 
-    local old_length = #minimapcontrol.enemy_list
     minimapcontrol.enemy_list = updated_enemy_list
+end
 
-    -- Check for combat ended
-    if old_length > 0 and #updated_enemy_list == 0 then
-        minimapcontrol.combat_engaged = false
+minimapcontrol.update_player_state = function()
+    minimapcontrol.player_moving = false
+    minimapcontrol.combat_engaged = false
+
+    local player_entity = GetPlayerEntity()
+    if player_entity == nil then
+        return
     end
+
+    -- Check if player moved
+    local x = player_entity.Movement.LocalPosition.X
+    local y = player_entity.Movement.LocalPosition.Y
+    local z = player_entity.Movement.LocalPosition.Z
+
+    minimapcontrol.player_moving = minimapcontrol.player_pos[1] ~= x or minimapcontrol.player_pos[2] ~= y or minimapcontrol.player_pos[3] ~= z
+    minimapcontrol.player_pos = { x, y, z }
+
+    -- Check if player in combat
+    local entity = AshitaCore:GetMemoryManager():GetEntity()
+    local party = AshitaCore:GetMemoryManager():GetParty()
+    local player_index = party:GetMemberTargetIndex(0)
+    minimapcontrol.combat_engaged = entity:GetStatus(player_index) == defines.entity_status.enganged
 end
 
 minimapcontrol.reset_state = function()
     minimapcontrol.enemy_list = T{}
+    minimapcontrol.player_moving = false
     minimapcontrol.combat_engaged = false
     minimapcontrol.current_menu = ''
     minimapcontrol.is_menu_open = false
     minimapcontrol.is_map_open = false
-    minimapcontrol.is_left_menu_open = false
+    minimapcontrol.is_window_open = false
     minimapcontrol.is_main_menu_open = false
     minimapcontrol.is_config_menu_open = false
     minimapcontrol.is_helpdesk_menu_open = false
@@ -281,23 +301,23 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
         return
     end
 
-    if (e.id == defines.packets.inc.inventory_update) then
+    if (e.id == defines.packets.inc.zone_in) then
         minimapcontrol.zoning = false
         return
     end
 
     if (e.id == defines.packets.inc.npc_update) then
-        local npc_index = struct.unpack('H', e.data, 0x08 + 1)
+        local user_index = struct.unpack('H', e.data, 0x08 + 1)
         local flags = struct.unpack('B', e.data, 0x0A + 1)
         if bit.band(flags, 0x02) == 0x02 then
             local claim_id = struct.unpack('L', e.data, 0x2C + 1)
-            if claim_id == nil or not GetIsValidMob(npc_index) then
+            if claim_id == nil or not GetIsValidMob(user_index) then
                 return
             end
 
             local partyMemberIds = GetPartyMemberIds()
-            if partyMemberIds:contains(e.newClaimId) and not minimapcontrol.enemy_list:contains(npc_index) then
-                table.insert(minimapcontrol.enemy_list, npc_index)
+            if partyMemberIds:contains(e.newClaimId) and not minimapcontrol.enemy_list:contains(user_index) then
+                table.insert(minimapcontrol.enemy_list, user_index)
                 -- print('Enemy list: ' .. #minimapcontrol.enemy_list .. ' (npc update)')
             end
         end
@@ -306,12 +326,16 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
 
     if (e.id == defines.packets.inc.action) then
         local packet_data = ParseActionPacket(e)
-        local npc_index = packet_data.UserIndex
-        if packet_data ~= nil and GetIsMobByIndex(npc_index) and GetIsValidMob(npc_index) then
+        if packet_data == nil then
+            return
+        end
+
+        local user_index = packet_data.UserIndex
+        if GetIsMobByIndex(user_index) and GetIsValidMob(user_index) then
             local partyMemberIds = GetPartyMemberIds()
             for i = 0, #packet_data.Targets do
-                if packet_data.Targets[i] ~= nil and partyMemberIds:contains(packet_data.Targets[i].Id) and not minimapcontrol.enemy_list:contains(npc_index) then
-                    table.insert(minimapcontrol.enemy_list, npc_index)
+                if packet_data.Targets[i] ~= nil and partyMemberIds:contains(packet_data.Targets[i].Id) and not minimapcontrol.enemy_list:contains(user_index) then
+                    table.insert(minimapcontrol.enemy_list, user_index)
                     -- print('Enemy list: ' .. #minimapcontrol.enemy_list .. ' (npc action)')
                     break
                 end
@@ -321,43 +345,15 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
     end
 end)
 
-ashita.events.register('packet_out', 'dev_packet_out', function(e)
-    if (e.id == defines.packets.out.action) then
-        local category = struct.unpack('h', e.data_modified, 0x0A + 1)
-        if category == defines.actions.engage_monster then
-            minimapcontrol.combat_engaged = true
-        elseif category == defines.actions.disengage then
-            minimapcontrol.combat_engaged = false
-        end
-        return
-    end
-end)
-
 ashita.events.register('d3d_beginscene', 'beginscene_cb', function(isRenderingBackBuffer)
-    -- Check for zoning..
     if (not isRenderingBackBuffer or minimapcontrol.zoning) then
         return
     end
 
-    -- Obtain the local player entity..
-    local p = GetPlayerEntity()
-    if (p == nil) then
-        return
-    end
-
-    -- Determine if the player is moving..
-    local x = p.Movement.LocalPosition.X
-    local y = p.Movement.LocalPosition.Y
-    local z = p.Movement.LocalPosition.Z
-
-    if (minimapcontrol.player_pos[1] == x and minimapcontrol.player_pos[2] == y and minimapcontrol.player_pos[3] == z) then
-        minimapcontrol.moving = false
-    else
-        minimapcontrol.moving = true
-    end
-
-    -- Update the last known coords..
-    minimapcontrol.player_pos = { x, y, z }
+    minimapcontrol.update_player_state()
+    minimapcontrol.update_menu_state()
+    minimapcontrol.update_enemy_list()
+    minimapcontrol.update_visiblity()
 end)
 
 ashita.events.register('d3d_present', 'present_cb', function()
@@ -365,10 +361,6 @@ ashita.events.register('d3d_present', 'present_cb', function()
     local clock_time = os.clock()
     if (clock_time >= minimapcontrol.last_update + minimapcontrol.update_interval) then
         minimapcontrol.last_update = clock_time
-
-        minimapcontrol.update_menu_state()
-        minimapcontrol.update_enemy_list()
-        minimapcontrol.update_visiblity()
 
         local fade_dir = minimapcontrol.visible and 1 or -1
         local update_per_frame = 0.4 * fade_dir
