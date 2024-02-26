@@ -79,6 +79,18 @@ local function is_game_interface_hidden()
     return (ashita.memory.read_uint8(ptr + 0xB4) == 1)
 end
 
+local pChatExpanded = ashita.memory.find('FFXiMain.dll', 0, '83EC??B9????????E8????????0FBF4C24??84C0', 0x04, 0)
+local function is_chat_expanded()
+    local ptr = ashita.memory.read_uint32(pChatExpanded)
+    if ptr == 0 then
+        return false
+    end
+
+    return ashita.memory.read_uint8(ptr + 0xF1) ~= 0
+end
+
+local minimap_ini = AshitaCore:GetInstallPath() .. '/config/minimap/minimap.ini'
+
 
 minimapcontrol.initialize = function()
     minimapcontrol.opacity.current = minimapcontrol.settings.opacity:clone()
@@ -225,6 +237,12 @@ minimapcontrol.update_visiblity = function()
         minimapcontrol.visible = false
         return
     end
+
+    -- Hide if chat expanded
+    if not minimapcontrol.settings.show_when.chat_expanded and is_chat_expanded() then
+        minimapcontrol.visible = false
+        return
+    end
 end
 
 minimapcontrol.update_enemy_list = function()
@@ -264,6 +282,36 @@ minimapcontrol.update_player_state = function()
     minimapcontrol.combat_engaged = entity:GetStatus(player_index) == defines.entity_status.enganged
 end
 
+minimapcontrol.set_zoom_level = function(zoom_level)
+    AshitaCore:GetChatManager():QueueCommand(1, '/minimap zoom ' .. zoom_level)
+end
+
+minimapcontrol.on_zone_changed = function(zone_id)
+    minimapcontrol.zone_id = tonumber(zone_id)
+    local zoom_level = minimapcontrol.settings.zoom[minimapcontrol.zone_id] or minimapcontrol.settings.default_zoom
+    minimapcontrol.set_zoom_level(zoom_level)
+end
+
+minimapcontrol.record_zoom_level = function()
+    if minimapcontrol.zone_id == nil then
+        return
+    end
+
+    local f = io.open(minimap_ini, 'r')
+    if (f == nil) then
+        return
+    end
+
+    for line in f:lines() do
+        local _, _, zoom_level = string.find(line, 'zoom[%s]*=[%s]*([%d%.]+)')
+        if zoom_level ~= nil then
+            minimapcontrol.settings.zoom[minimapcontrol.zone_id] = zoom_level
+            settings.save()
+            break
+        end
+    end
+end
+
 minimapcontrol.reset_state = function()
     minimapcontrol.enemy_list = T{}
     minimapcontrol.player_moving = false
@@ -283,6 +331,9 @@ ashita.events.register('load', 'minimapcontrol_load', function()
     minimapcontrol.settings = settings.load(default_settings)
     minimapcontrol.initialize()
 
+    local zone_id = AshitaCore:GetMemoryManager():GetParty():GetMemberZone(0)
+    minimapcontrol.on_zone_changed(zone_id)
+
     -- Register for future settings updates
     settings.register('settings', 'minimapcontrol_settings_update', function(s)
         if (s ~= nil) then
@@ -298,11 +349,14 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
     if (e.id == defines.packets.inc.zone_out) then
         minimapcontrol.zoning = true
         minimapcontrol.reset_state()
+        minimapcontrol.record_zoom_level()
         return
     end
 
     if (e.id == defines.packets.inc.zone_in) then
         minimapcontrol.zoning = false
+        local zone_id = struct.unpack('H', e.data, 0x30 + 1)
+        minimapcontrol.on_zone_changed(zone_id)
         return
     end
 
@@ -346,7 +400,7 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
 end)
 
 ashita.events.register('d3d_beginscene', 'beginscene_cb', function(isRenderingBackBuffer)
-    if (not isRenderingBackBuffer or minimapcontrol.zoning) then
+    if not isRenderingBackBuffer then
         return
     end
 

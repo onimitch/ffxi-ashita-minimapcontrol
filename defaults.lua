@@ -21,8 +21,12 @@ defaults.show_when = T{
     main_menu_open = true,
     map_open = false,
     auction_open = false,
+    chat_expanded = false,
 }
 
 defaults.debug_menus = false
+
+defaults.default_zoom = 1
+defaults.zoom = T{}
 
 return defaults
