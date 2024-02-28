@@ -1,6 +1,6 @@
 # minimapcontrol
 
-An ashita v4 addon to control the visiblity of the Ashita v4 minimap plugin. 
+An ashita v4 addon to control the visiblity of the Ashita v4 minimap plugin, as well as automatically saving zoom levels per zone.
 Based on atom0s minimapmon (bundled with Ashita v4) with extra functionality.
 
 ## How to install:
@@ -41,6 +41,7 @@ Set the following values to the opacity you want when the minimap is displayed, 
 * `settings["show_when"]["auction_open"]` - If false, the minimap will be hidden when the auction window is open.
 * `settings["show_when"]["map_open"]` - If false, the minimap will be hidden when the map or region map is open.
 * `settings["show_when"]["in_combat"]` - If false, the minimap will be hidden when in combat.
+* `settings["show_when"]["chat_expanded"]` - If false, the minimap will be hidden when the chat window is expanded.
 
 ## Issues/Support
 
