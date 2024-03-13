@@ -45,6 +45,7 @@ defines.menus = {
     region_map = 'cnqframe',
     region_list = 'region',
     search_result = 'scresult',
+    search_option = 'scoption',
     command = 'playermo',
     trade = 'handover',
     shop = 'shop',
@@ -63,6 +64,7 @@ defines.menus = {
     command_ability = 'ability',
     command_mount = 'mount',
     synth_history = 'cmbhlst',
+    synth_option = 'cmb',
     linkshell = 'link[%d]',
     comment = 'comment',
     helpdesk_menu = 'faqsub',
@@ -72,6 +74,11 @@ defines.menus = {
     merit_categories = 'meritcat',
     confirm_yn = 'comyn',
     ability_select = 'abiselec',
+    equip_storage_options = 'mnstorag',
+    party = 'prty[%d]',
+    alarm = 'alarm',
+    magic_list = 'mgc',
+    ability_list = 'abi$',
 }
 
 defines.command_menu = {
@@ -111,6 +118,8 @@ defines.window = {
     defines.menus.merit_categories,
     defines.menus.confirm_yn,
     defines.menus.macro,
+    defines.menus.equip_storage_options,
+    defines.menus.search_option,
 }
 
 defines.main_menu = {
@@ -125,6 +134,13 @@ defines.main_menu = {
     defines.menus.item_sort_yn,
     defines.menus.region_list,
     defines.menus.merit,
+    defines.menus.equip_storage_options,
+    defines.menus.party,
+    defines.menus.alarm,
+    defines.menus.search_option,
+    defines.menus.magic_list,
+    defines.menus.synth_option,
+    defines.menus.ability_list,
 }
 
 return defines
