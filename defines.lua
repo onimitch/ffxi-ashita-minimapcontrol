@@ -79,6 +79,8 @@ defines.menus = {
     alarm = 'alarm',
     magic_list = 'mgc',
     ability_list = 'abi$',
+    jobpoint_categories = 'jbpcat',
+    unity = 'ut_',
 }
 
 defines.command_menu = {
@@ -120,6 +122,8 @@ defines.window = {
     defines.menus.macro,
     defines.menus.equip_storage_options,
     defines.menus.search_option,
+    defines.menus.jobpoint_categories,
+    defines.menus.unity,
 }
 
 defines.main_menu = {
