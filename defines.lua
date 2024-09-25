@@ -81,6 +81,11 @@ defines.menus = {
     ability_list = 'abi$',
     jobpoint_categories = 'jbpcat',
     unity = 'ut_',
+    gearset_edit = 'mcresed',
+    post = 'post[%d]',
+    nomadmoogle = 'mogext',
+    delivery = 'delivery',
+    delivery_entry = 'stringdl',
 }
 
 defines.command_menu = {
@@ -93,6 +98,7 @@ defines.command_menu = {
     defines.menus.comment,
     defines.menus.emote,
     defines.menus.ability_select,
+    defines.menus.nomadmoogle,
 }
 
 defines.window = {
@@ -124,6 +130,10 @@ defines.window = {
     defines.menus.search_option,
     defines.menus.jobpoint_categories,
     defines.menus.unity,
+    defines.menus.gearset_edit,
+    defines.menus.post,
+    defines.menus.delivery,
+    defines.menus.delivery_entry,
 }
 
 defines.main_menu = {
