@@ -45,7 +45,7 @@ local pGameMenu = ashita.memory.find('FFXiMain.dll', 0, '8B480C85C974??8B510885D
 local function get_game_menu_name()
     local menu_pointer = ashita.memory.read_uint32(pGameMenu)
     local menu_val = ashita.memory.read_uint32(menu_pointer)
-    if (menu_val == 0) then
+    if menu_val == 0 then
         return ''
     end
     local menu_header = ashita.memory.read_uint32(menu_val + 4)
@@ -55,28 +55,28 @@ end
 
 local pEventSystem = ashita.memory.find('FFXiMain.dll', 0, 'A0????????84C0741AA1????????85C0741166A1????????663B05????????0F94C0C3', 0, 0)
 local function is_event_system_active()
-    if (pEventSystem == 0) then
+    if pEventSystem == 0 then
         return false
     end
     local ptr = ashita.memory.read_uint32(pEventSystem + 1)
-    if (ptr == 0) then
+    if ptr == 0 then
         return false
     end
 
-    return (ashita.memory.read_uint8(ptr) == 1)
+    return ashita.memory.read_uint8(ptr) == 1
 end
 
 local pInterfaceHidden = ashita.memory.find('FFXiMain.dll', 0, '8B4424046A016A0050B9????????E8????????F6D81BC040C3', 0, 0)
 local function is_game_interface_hidden()
-    if (pInterfaceHidden == 0) then
+    if pInterfaceHidden == 0 then
         return false
     end
     local ptr = ashita.memory.read_uint32(pInterfaceHidden + 10)
-    if (ptr == 0) then
+    if ptr == 0 then
         return false
     end
 
-    return (ashita.memory.read_uint8(ptr + 0xB4) == 1)
+    return ashita.memory.read_uint8(ptr + 0xB4) == 1
 end
 
 local pChatExpanded = ashita.memory.find('FFXiMain.dll', 0, '83EC??B9????????E8????????0FBF4C24??84C0', 0x04, 0)
@@ -233,7 +233,7 @@ minimapcontrol.update_visiblity = function()
     end
 
     -- Hide if in combat
-    if not minimapcontrol.settings.show_when.in_combat and (minimapcontrol.combat_engaged or #minimapcontrol.enemy_list > 0) then
+    if not minimapcontrol.settings.show_when.in_combat and not minimapcontrol.is_mounted() and (minimapcontrol.combat_engaged or #minimapcontrol.enemy_list > 0) then
         minimapcontrol.visible = false
         return
     end
@@ -310,6 +310,17 @@ minimapcontrol.record_zoom_level = function()
             break
         end
     end
+end
+
+minimapcontrol.is_mounted = function()
+    local mount_status_id = 252
+    local buff_list = AshitaCore:GetMemoryManager():GetPlayer():GetBuffs()
+    for _, buff in pairs(buff_list) do
+        if buff == mount_status_id then
+            return true
+        end
+    end
+    return false
 end
 
 minimapcontrol.reset_state = function()
