@@ -1,6 +1,6 @@
 addon.name      = 'minimapcontrol'
 addon.author    = 'onimitch'
-addon.version   = '1.2.1'
+addon.version   = '1.2.2'
 addon.desc      = 'Controls the visiblity of the Ashita v4 minimap plugin. Based on atom0s minimapmon with extra functionality.'
 addon.link      = 'https://github.com/onimitch/ffxi-ashita-minimapcontrol'
 
