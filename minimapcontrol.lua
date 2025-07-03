@@ -1,6 +1,6 @@
 addon.name      = 'minimapcontrol'
 addon.author    = 'onimitch'
-addon.version   = '1.2.2'
+addon.version   = '1.2.3'
 addon.desc      = 'Controls the visiblity of the Ashita v4 minimap plugin. Based on atom0s minimapmon with extra functionality.'
 addon.link      = 'https://github.com/onimitch/ffxi-ashita-minimapcontrol'
 
@@ -303,7 +303,7 @@ minimapcontrol.record_zoom_level = function()
     end
 
     for line in f:lines() do
-        local _, _, zoom_level = string.find(line, 'zoom[%s]*=[%s]*([%d%.]+)')
+        local _, _, zoom_level = string.find(line, 'zoom[%s]*=[%s]*([%d%.,]+)')
         if zoom_level ~= nil then
             minimapcontrol.settings.zoom[minimapcontrol.zone_id] = zoom_level
             settings.save()
